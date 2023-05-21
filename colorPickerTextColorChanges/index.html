@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker Text Changes</title>
+</head>
+<body>
+    <input type="color" value="#fff000"/>
+    <div id="example" style="height: 100vh; width: 100vw; background-color: #fff000; font-size:6rem;">Example Text</div>
+
+        <script src="https://unpkg.com/brain.js@1.1.2/browser.min.js"></script>
+        <script>
+            function hexToRgb(hex) {
+    const regex = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
+    const result = regex.exec(hex);
+
+    if (!result) {
+        throw new Error('Invalid hexadecimal color value');
+    }
+
+    const [, r, g, b] = result;
+    return {
+        r: parseInt(r, 16),
+        g: parseInt(g, 16),
+        b: parseInt(b, 16)
+    };
+}
+
+        </script>
+
+        <script>
+            const input = document.querySelector("input")
+            const example = document.querySelector("#example")
+
+            input.addEventListener("change", (e)=>{
+                const rgb = hexToRgb(e.target.value);
+                const network = new brain.NeuralNetwork()
+                console.log(rgb)
+
+                network.train([
+                    {input: {r:0.62, g:0.72, b:0.88}, output:{light:1} },
+                    {input: {r:0.1, g:0.84, b:0.72}, output:{light:1} },
+                    {input: {r:0.33, g:0.24, b:0.29}, output:{dark:1} },
+                    {input: {r:0.74, g:0.78, b:0.86}, output:{light:1} },
+                    {input: {r:0.31, g:0.35, b:0.41}, output:{dark:1} }
+
+                ])
+                const result = brain.likely(rgb, network)
+                console.log(result);
+                example.style.background = e.target.value
+                example.style.color = result === "dark" ? " white" : "black"
+            })
+        </script>
+        <footer>Try to see Console for better understading of, on which basis text Color Changes</footer>
+</body>
+</html>
